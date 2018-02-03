@@ -4,7 +4,8 @@
 #include <v8.h>
 #include <nan/nan.h>
 #include <defines.h>
-#include <canvas/include/ContextAndroid.h>
+// #include <canvas/include/ContextAndroid.h>
+#include <canvas/include/ContextGDIPlus.h>
 #include <canvas/include/Image.h>
 #include <canvas/include/ImageData.h>
 
@@ -18,7 +19,7 @@ class Path2D;
 
 class CanvasRenderingContext2D : public ObjectWrap {
 public:
-  static Handle<Object> Initialize(Isolate *isolate, canvas::ContextFactory *canvasContextFactory, Local<Value> imageDataCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> imageDataCons);
   unsigned int GetWidth();
   unsigned int GetHeight();
   unsigned int GetNumChannels();
@@ -98,8 +99,6 @@ protected:
   virtual ~CanvasRenderingContext2D();
 
 private:
-  static canvas::ContextFactory *canvasContextFactory;
-
   canvas::Context *context;
 
   friend class Image;
@@ -108,9 +107,9 @@ private:
   friend class Path2D;
 };
 
-#include "image.h"
-#include "imageData.h"
-#include "imageBitmap.h"
-#include "path2d.h"
+#include "image-context.h"
+#include "imageData-context.h"
+#include "imageBitmap-context.h"
+#include "path2d-context.h"
 
 #endif

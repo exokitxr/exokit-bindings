@@ -5,25 +5,18 @@
  *      Author: ngk437
  */
 
-#ifndef WEBGL_H_
-#define WEBGL_H_
+#ifndef _WEBGLCONTEXT_WEBGL_H_
+#define _WEBGLCONTEXT_WEBGL_H_
 
 #include <nan/nan.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include <GL/glew.h>
+#include <GLES2/gl2platform.h>
 #include <GLES2/gl2ext.h>
-#include <GLES2/gl2.h>
 
 using namespace node;
 using namespace v8;
 
 namespace webgl {
-// void AtExit();
-
-// NAN_METHOD(Init);
-
 NAN_METHOD(Uniform1f);
 NAN_METHOD(Uniform2f);
 NAN_METHOD(Uniform3f);

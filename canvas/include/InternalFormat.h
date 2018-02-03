@@ -20,6 +20,15 @@ namespace canvas {
     R32F,
     RGBA5551
   };
+  
+  /* bool hasAlpha(InternalFormat internalFormat) {
+    return internalFormat == InternalFormat::RGBA4 ||
+      internalFormat == InternalFormat::RGBA4 ||
+      internalFormat == InternalFormat::RGBA_DXT5 ||
+      internalFormat == InternalFormat::LUMINANCE_ALPHA ||
+      internalFormat == InternalFormat::LA44 ||
+      internalFormat == InternalFormat::RGBA5551;
+  } */
 };
 
 #endif

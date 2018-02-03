@@ -1,13 +1,12 @@
-#include <canvascontext/include/image.h>
+#include <canvascontext/include/image-context.h>
 
 using namespace v8;
 // using namespace node;
 // using namespace std;
 
 // Persistent<Function> Image::constructor_template;
-canvas::ContextFactory *Image::canvasContextFactory;
 
-Handle<Object> Image::Initialize(Isolate *isolate, canvas::ContextFactory *canvasContextFactory) {
+Handle<Object> Image::Initialize(Isolate *isolate) {
   v8::EscapableHandleScope scope(isolate);
 
   // constructor
@@ -27,8 +26,6 @@ Handle<Object> Image::Initialize(Isolate *isolate, canvas::ContextFactory *canva
   // Nan::Set(target, JS_STR("Image"), ctor->GetFunction());
 
   // constructor_template.Reset(Isolate::GetCurrent(), ctor->GetFunction());
-
-  Image::canvasContextFactory = canvasContextFactory;
 
   return scope.Escape(ctor->GetFunction());
 }
@@ -104,7 +101,8 @@ NAN_METHOD(Image::LoadMethod) {
 }
 
 Image::Image () {
-  image = Image::canvasContextFactory->createImage().release();
+  canvas::GDIPlusContextFactory factory;
+  image = factory.createImage().release();
 }
 Image::~Image () {
   delete image;

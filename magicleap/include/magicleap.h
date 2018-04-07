@@ -51,6 +51,7 @@ protected:
   static NAN_METHOD(Init);
   static NAN_METHOD(WaitGetPoses);
   static NAN_METHOD(SubmitFrame);
+  static NAN_METHOD(PrepareFrame);
   static NAN_METHOD(IsPresent);
   static NAN_METHOD(OnPresentChange);
   static void LifecycleInit();

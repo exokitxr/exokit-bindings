@@ -165,6 +165,7 @@ Handle<Object> MLContext::Initialize(Isolate *isolate) {
   Nan::SetMethod(proto, "Init", Init);
   Nan::SetMethod(proto, "WaitGetPoses", WaitGetPoses);
   Nan::SetMethod(proto, "SubmitFrame", SubmitFrame);
+  Nan::SetMethod(proto, "PrepareFrame", PrepareFrame);
 
   Local<Function> ctorFn = ctor->GetFunction();
 
@@ -366,8 +367,9 @@ NAN_METHOD(MLContext::WaitGetPoses) {
       }
 
       // framebuffer
-      framebufferArray->Set(0, JS_INT((unsigned int)mlContext->virtual_camera_array.color_id));
-      framebufferArray->Set(1, JS_INT((unsigned int)mlContext->virtual_camera_array.depth_id));
+      framebufferArray->Set(0, JS_INT((unsigned int)mlContext->framebuffer_id));
+      framebufferArray->Set(1, JS_INT((unsigned int)mlContext->virtual_camera_array.color_id));
+      framebufferArray->Set(2, JS_INT((unsigned int)mlContext->virtual_camera_array.depth_id));
 
       // transform
       for (int i = 0; i < 2; i++) {
@@ -592,6 +594,39 @@ NAN_METHOD(MLContext::SubmitFrame) {
 
   // meshing
   mlContext->mesherCv.notify_one();
+}
+
+NAN_METHOD(MLContext::PrepareFrame) {
+  MLContext *mlContext = ObjectWrap::Unwrap<MLContext>(info.This());
+
+  GLuint dst_framebuffer_id = info[0]->Uint32Value();
+  unsigned int width = info[1]->Uint32Value();
+  unsigned int height = info[2]->Uint32Value();
+
+  const MLRectf &viewport = mlContext->virtual_camera_array.viewport;
+
+  for (int i = 0; i < 2; i++) {
+    MLGraphicsVirtualCameraInfo
+ &camera = mlContext->virtual_camera_array.virtual_cameras[i];
+
+    glBindFramebuffer(GL_FRAMEBUFFER, mlContext->framebuffer_id);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mlContext->virtual_camera_array.color_id, 0, i);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, mlContext->virtual_camera_array.depth_id, 0, i);
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, mlContext->framebuffer_id);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst_framebuffer_id);
+
+    const bool isLeft = camera.virtual_camera_name == MLGraphicsVirtualCameraName_Left;
+    glBlitFramebuffer(
+      isLeft ? 0 : width/2, 0,
+      isLeft ? width/2 : width, height,
+      viewport.x, viewport.y,
+      viewport.w, viewport.h,
+      GL_COLOR_BUFFER_BIT,
+      GL_LINEAR);
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 NAN_METHOD(MLContext::IsPresent) {
